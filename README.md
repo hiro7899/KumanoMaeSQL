@@ -46,3 +46,32 @@ ERD 추가/수정 시 `erd/` 폴더 내에 **두 가지 형식**으로 함께 �
 ### 3. ERD 표기 규칙
 - 테이블명 및 컬럼명은 DDL 스크립트와 동일하게 **대문자 (`UPPER_SNAKE_CASE`)**로 작성해 주세요.
 - Primary Key (PK), Foreign Key (FK), Not Null 여부와 데이터 타입(VARCHAR2, NUMBER, DATE 등)을 명확히 표기해 주세요.
+
+## 🔗 조인(JOIN) 및 외부조인(OUTER JOIN) 활용 가이드
+
+데이터베이스에서 여러 테이블의 데이터를 합성하여 조회할 때 조인을 사용합니다.
+
+### 1. INNER JOIN vs OUTER JOIN 차이점
+- **INNER JOIN (내부 조인)**: 두 테이블에 **모두 존재하는 데이터만** 조회 (교집합)
+- **OUTER JOIN (외부 조인)**: 기준 테이블의 **모든 데이터를 유지**하며, 연관 데이터가 없으면 `NULL`로 표시
+
+### 2. OUTER JOIN을 써야 하는 이유 (실무 예시)
+1. **전체 회원 목록 및 작성글 조회**
+   - 글을 작성하지 않은 신규 회원도 목록에 나와야 할 때 (INNER JOIN 사용 시 글 없는 회원은 누락됨)
+2. **곰 출몰 제보 게시판과 위험 지역 정보**
+   - 위험 지역으로 지정되지 않은 일반 제보글도 목록에 전부 표시되어야 할 때
+3. **게시글과 첨부파일/댓글**
+   - 첨부파일이나 댓글이 0개인 게시글도 정상적으로 화면에 나와야 할 때
+
+### 3. 기초 SQL 구문 예시 (LEFT OUTER JOIN)
+> `LEFT JOIN`은 왼쪽 테이블(회원)을 기준으로 오른쪽 테이블(게시글)을 합칩니다.
+
+```sql
+-- 글을 안 쓴 회원도 포함하여 모든 회원과 그들이 쓴 글 제목 조회
+SELECT 
+    U.USER_ID, 
+    U.USER_NAME, 
+    B.TITLE
+FROM USERS U
+LEFT OUTER JOIN BEAR_BOARDS B 
+    ON U.USER_ID = B.USER_ID;
